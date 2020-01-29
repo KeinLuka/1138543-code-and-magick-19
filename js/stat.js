@@ -9,7 +9,7 @@ var GAP_TEXT_BOTTOM = 30;
 var GAP = 50;
 var FONT_GAP = 40;
 var TEXT_HEIGHT = 10;
-var TEXT_HEIGHT__BAR = 5;
+var TEXT_HEIGHT_BAR = 5;
 var BAR_HEIGHT = 150;
 var barWidth = 40;
 
@@ -19,15 +19,7 @@ var renderCloud = function (ctx, x, y, color) {
 };
 
 var getMaxElement = function (arr) {
-  var maxElement = arr[0];
-
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i] > maxElement) {
-      maxElement = arr[i];
-    }
-  }
-
-  return maxElement;
+  return Math.max.apply(null, arr);
 };
 
 window.renderStatistics = function (ctx, names, times) {
@@ -43,11 +35,17 @@ window.renderStatistics = function (ctx, names, times) {
   var maxTime = getMaxElement(times);
   var playerName = 'Вы';
 
-  for (var i = 0; i < names.length; i++) {
+  names.forEach(function (elem, i) {
+    var leftMargin = CLOUD_X + GAP + i * (FONT_GAP + GAP);
+    var positionName = CLOUD_HEIGTH - GAP_TEXT_BOTTOM;
+    var positionTime = CLOUD_HEIGTH - GAP - ((BAR_HEIGHT * times[i]) / maxTime) - TEXT_HEIGHT_BAR;
+    var positionRectY = TEXT_HEIGHT + CLOUD_HEIGTH - GAP;
+    var barHeight = -1 * ((BAR_HEIGHT * times[i]) / maxTime);
+    var colorRect = ((elem === playerName) ? 'rgba(255, 0, 0, 1)' : 'hsla(210, ' + (Math.random() * 100) + '%, 50%, 1)');
     ctx.fillStyle = '#000';
-    ctx.fillText(names[i], CLOUD_X + GAP + i * (FONT_GAP + GAP), CLOUD_HEIGTH - GAP_TEXT_BOTTOM);
-    ctx.fillText(Math.round(times[i]), CLOUD_X + GAP + i * (FONT_GAP + GAP), CLOUD_HEIGTH - GAP - ((BAR_HEIGHT * times[i]) / maxTime) - TEXT_HEIGHT__BAR);
-    ctx.fillStyle = ((names[i] === playerName) ? 'rgba(255, 0, 0, 1)' : 'hsla(210, ' + (Math.random() * 100) + '%, 50%, 1)');
-    ctx.fillRect(CLOUD_X + GAP + i * (barWidth + GAP), TEXT_HEIGHT + CLOUD_HEIGTH - GAP, barWidth, -1 * ((BAR_HEIGHT * times[i]) / maxTime));
-  }
+    ctx.fillText(elem, leftMargin, positionName);
+    ctx.fillText(Math.round(times[i]), leftMargin, positionTime);
+    ctx.fillStyle = colorRect;
+    ctx.fillRect(leftMargin, positionRectY, barWidth, barHeight);
+  });
 };
